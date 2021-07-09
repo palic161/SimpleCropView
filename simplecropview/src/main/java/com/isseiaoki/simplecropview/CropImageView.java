@@ -435,6 +435,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     builder.append("ACTUAL_CROP_RECT: ").append(getActualCropRect() != null ? getActualCropRect().toString() : "");
     y += textHeight;
     canvas.drawText(builder.toString(), x, y, mPaintDebug);
+    Logger.i(builder.toString());
   }
 
   private void drawCropFrame(Canvas canvas) {
@@ -1995,6 +1996,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
             newRect.right + mImageRect.left, newRect.bottom + mImageRect.top
     );
     recalculateFrameRect(mAnimationDurationMillis, absoluteRect);
+  }
+
+  /**
+   *
+   * Set crop frame rectangle
+
+   * Another way to set frame rectangle from some [previously remembered] rectF.
+   * Works better than #setFrameRect for me   * Uses applyInitialFrameRect which works even
+   * if screen was resized because of i.e. showing keyboard.
+   *
+   * @param newRect new frame rectangle (e.g. received from #getActualCropRect)
+   */
+  public void setCropFrameRect(RectF newRect) {
+    mCropMode = CropMode.FREE;
+    mFrameRect = applyInitialFrameRect(newRect);
+    invalidate();
   }
 
   /**
