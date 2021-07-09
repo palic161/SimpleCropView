@@ -1175,7 +1175,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
   private Bitmap getBitmap() {
     Bitmap bm = null;
     Drawable d = getDrawable();
-    if (d != null && d instanceof BitmapDrawable) bm = ((BitmapDrawable) d).getBitmap();
+    if (d instanceof BitmapDrawable) bm = ((BitmapDrawable) d).getBitmap();
     return bm;
   }
 
@@ -1197,7 +1197,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
   private Bitmap getRotatedBitmap(Bitmap bitmap) {
     Matrix rotateMatrix = new Matrix();
-    rotateMatrix.setRotate(mAngle, bitmap.getWidth() / 2, bitmap.getHeight() / 2);
+    rotateMatrix.setRotate(mAngle, bitmap.getWidth() >> 1, bitmap.getHeight() >> 1);
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), rotateMatrix,
         true);
   }
@@ -1211,11 +1211,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
   private void setupAnimatorIfNeeded() {
     if (mAnimator == null) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-        mAnimator = new ValueAnimatorV8(mInterpolator);
-      } else {
-        mAnimator = new ValueAnimatorV14(mInterpolator);
-      }
+      mAnimator = new ValueAnimatorV14(mInterpolator);
     }
   }
 
@@ -2431,7 +2427,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
   // Save/Restore support ////////////////////////////////////////////////////////////////////////
 
-  public static class SavedState extends BaseSavedState {
+  public static class SavedState extends BaseSavedState implements Parcelable{
     CropMode mode;
     int backgroundColor;
     int overlayColor;
@@ -2556,13 +2552,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
       out.writeInt(outputImageHeight);
     }
 
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-      public SavedState createFromParcel(final Parcel inParcel) {
-        return new SavedState(inParcel);
+    public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+
+      @Override
+      public SavedState createFromParcel(Parcel in) {
+        return new SavedState(in);
       }
 
-      public SavedState[] newArray(final int inSize) {
-        return new SavedState[inSize];
+      @Override
+      public SavedState[] newArray(int size) {
+        return new SavedState[size];
       }
     };
   }
